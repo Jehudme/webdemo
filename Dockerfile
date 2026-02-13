@@ -1,5 +1,4 @@
 # --- Stage 1: Build ---
-# Update to a JDK 25 image
 FROM maven:3-eclipse-temurin-25 AS build
 WORKDIR /app
 
@@ -13,15 +12,17 @@ RUN mvn clean install -pl webdemo-client -am
 RUN mvn jpro:release -pl webdemo-client
 
 # --- Stage 2: Run ---
-# Update to a JRE 25 image
 FROM eclipse-temurin:25-jre
 WORKDIR /app
 
 # Copy the release bundle from the build stage
 COPY --from=build /app/webdemo-client/target/jpro/release ./
 
+# Ensure the start script is executable
+RUN chmod +x bin/start.sh
+
 # Expose the default JPro port
 EXPOSE 8080
 
-# Start the JPro server
-ENTRYPOINT ["./bin/start.sh"]
+# Start the JPro server and bind to 0.0.0.0
+ENTRYPOINT ["./bin/start.sh", "--host", "0.0.0.0", "--port", "8080"]
