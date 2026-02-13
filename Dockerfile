@@ -25,12 +25,16 @@ WORKDIR /app
 # Copy the unzipped release contents
 COPY --from=build /app/webdemo-client/target/dist/webdemo-client-jpro ./
 
+# --- CRITICAL FIX ---
+# Remove the process ID lock file that prevents the server from starting.
+# This file was bundled in your source and causes the "Already Running" error.
+RUN rm -f RUNNING_PID
+
 # Ensure the start script is executable
 RUN chmod +x bin/start.sh
 
 # Expose the default JPro port
 EXPOSE 8080
 
-# Start the JPro server without the unrecognized --host flags
-# It binds to 0.0.0.0 by default in server mode
+# Start the JPro server
 ENTRYPOINT ["./bin/start.sh"]
