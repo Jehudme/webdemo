@@ -2,7 +2,7 @@
 FROM maven:3-eclipse-temurin-25 AS build
 WORKDIR /app
 
-# Install unzip to extract the JPro release
+# Install unzip to handle the JPro release archive
 RUN apt-get update && apt-get install -y unzip
 
 # 1. Cache dependencies: Copy ONLY pom files first
@@ -22,15 +22,15 @@ RUN mvn clean install -pl webdemo-client -am && \
 FROM eclipse-temurin:25-jre
 WORKDIR /app
 
-# Copy the unzipped release contents
+# Copy the unzipped release contents from the build stage
+# The path matches the artifactId and release structure
 COPY --from=build /app/webdemo-client/target/dist/webdemo-client-jpro ./
 
-# --- CRITICAL FIX ---
-# Remove the process ID lock file that prevents the server from starting.
-# This file was bundled in your source and causes the "Already Running" error.
+# --- CRITICAL FIXES ---
+# 1. Remove the PID lock file that was bundled from your local environment
 RUN rm -f RUNNING_PID
 
-# Ensure the start script is executable
+# 2. Ensure the start script is executable
 RUN chmod +x bin/start.sh
 
 # Expose the default JPro port
