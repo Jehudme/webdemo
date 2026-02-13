@@ -41,6 +41,8 @@
         <version>${jpro.version}</version>
         <configuration>
           <mainClassName>org.example.webdemoclient.HelloApplication</mainClassName>
+          <openURLOnStartup>false</openURLOnStartup>
+          <visible>false</visible>
         </configuration>
       </plugin>
     </plugins>
