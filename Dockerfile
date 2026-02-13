@@ -36,5 +36,7 @@ RUN chmod +x bin/start.sh
 # Expose the default JPro port
 EXPOSE 8080
 
+CMD rm -f /app/RUNNING_PID && ./bin/start.sh
+
 # Start the JPro server
 ENTRYPOINT ["./bin/start.sh"]
